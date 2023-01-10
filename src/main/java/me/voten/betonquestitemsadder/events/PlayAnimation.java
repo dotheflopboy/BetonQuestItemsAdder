@@ -1,11 +1,13 @@
-package me.voten.betonquestitemsadder.events;
+package main.java.me.voten.betonquestitemsadder.events;
 
 import dev.lone.itemsadder.api.ItemsAdder;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.QuestEvent;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.exceptions.QuestRuntimeException;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
+
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.QuestEvent;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.utils.PlayerConverter;
+import org.bukkit.entity.Player;
 
 public class PlayAnimation extends QuestEvent {
 
@@ -17,8 +19,8 @@ public class PlayAnimation extends QuestEvent {
     }
 
     @Override
-    protected Void execute(String playerID) {
-        ItemsAdder.playTotemAnimation(PlayerConverter.getPlayer(playerID), this.name);
+    protected Void execute(Profile profile) {
+        ItemsAdder.playTotemAnimation((Player) PlayerConverter.getID(profile.getPlayer()), this.name);
         return null;
     }
 

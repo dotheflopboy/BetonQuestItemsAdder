@@ -1,4 +1,4 @@
-package me.voten.betonquestitemsadder.util;
+package main.java.me.voten.betonquestitemsadder.util;
 
 public class NumberUtils {
 

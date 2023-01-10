@@ -1,7 +1,16 @@
-package me.voten.betonquestitemsadder.objectives;
+package main.java.me.voten.betonquestitemsadder.objectives;
 
 import dev.lone.itemsadder.api.ItemsAdder;
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
 import me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Objective;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.config.Config;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.exceptions.QuestRuntimeException;
+import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,14 +18,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import pl.betoncraft.betonquest.BetonQuest;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Objective;
-import pl.betoncraft.betonquest.config.Config;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.exceptions.QuestRuntimeException;
-import pl.betoncraft.betonquest.utils.LogUtils;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
+
 
 import java.util.logging.Level;
 
@@ -53,7 +55,7 @@ public class BlockBreak extends Objective implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent e) {
-        String playerID = PlayerConverter.getID(e.getPlayer());
+        String playerID = String.valueOf(PlayerConverter.getID(e.getPlayer()));
         if (containsPlayer(playerID)) {
             if (ItemsAdder.isCustomBlock(e.getBlock())) {
                 if (ItemsAdder.matchCustomItemName(ItemsAdder.getCustomBlock(e.getBlock()), ItemsAdder.getCustomItemName(this.item))) {
@@ -91,6 +93,9 @@ public class BlockBreak extends Objective implements Listener {
         }
     }
 
+    private boolean containsPlayer(String playerID) {
+    }
+
     @Override
     public void start() {
         Bukkit.getPluginManager().registerEvents(this, BetonQuest.getInstance());
@@ -107,19 +112,19 @@ public class BlockBreak extends Objective implements Listener {
     }
 
     @Override
-    public String getProperty(String name, String playerID) {
+    public String getProperty(String name, Profile profile) {
         if ("left".equalsIgnoreCase(name))
-            return Integer.toString(this.amount - ((BlockData) this.dataMap.get(playerID)).getAmount());
+            return Integer.toString(this.amount - ((BlockData) this.dataMap.get(profile)).getAmount());
         if ("amount".equalsIgnoreCase(name))
-            return Integer.toString(((BlockData) this.dataMap.get(playerID)).getAmount());
+            return Integer.toString(((BlockData) this.dataMap.get(profile)).getAmount());
         return "";
     }
 
     public static class BlockData extends Objective.ObjectiveData {
         private int amount;
 
-        public BlockData(String instruction, String playerID, String objID) {
-            super(instruction, playerID, objID);
+        public BlockData(String instruction, Profile profile, String objID) {
+            super(instruction, profile, objID);
             this.amount = Integer.parseInt(instruction);
         }
 

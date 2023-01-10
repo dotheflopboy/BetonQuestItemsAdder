@@ -1,12 +1,14 @@
 package me.voten.betonquestitemsadder.events;
 
 import dev.lone.itemsadder.api.ItemsAdder;
-import me.voten.betonquestitemsadder.util.NumberUtils;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.QuestEvent;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
+
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.api.profiles.Profile;
 import org.bukkit.inventory.ItemStack;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.QuestEvent;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.utils.PlayerConverter;
 
 public class RemoveItems extends QuestEvent {
     private final ItemStack item;
@@ -30,13 +32,13 @@ public class RemoveItems extends QuestEvent {
     }
 
     @Override
-    protected Void execute(String playerID) {
+    protected Void execute(Profile profile) {
         if (this.item == null) {
             System.out.println("§c[BetonQuest -> ItemsAdder] Wrong item name");
             return null;
         }
         this.item.setAmount(this.amount);
-        PlayerConverter.getPlayer(playerID).getInventory().removeItem(this.item);
+        PlayerConverter.getOnlineProfiles(profile).getInventory().removeItem(this.item);
         return null;
     }
 }
