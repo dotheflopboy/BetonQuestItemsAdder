@@ -1,7 +1,16 @@
-package me.voten.betonquestitemsadder.objectives;
+package main.java.me.voten.betonquestitemsadder.objectives;
 
 import dev.lone.itemsadder.api.ItemsAdder;
-import me.voten.betonquestitemsadder.util.NumberUtils;
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Objective;
+import org.betonquest.betonquest.api.profiles.OnlineProfile;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.config.Config;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.exceptions.QuestRuntimeException;
+import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,14 +19,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-import pl.betoncraft.betonquest.BetonQuest;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Objective;
-import pl.betoncraft.betonquest.config.Config;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.exceptions.QuestRuntimeException;
-import pl.betoncraft.betonquest.utils.LogUtils;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
 
 import java.util.Locale;
 import java.util.logging.Level;
@@ -55,25 +56,25 @@ public class PickupItem extends Objective implements Listener {
     public void onPickup(EntityPickupItemEvent e) {
         if (!(e.getEntity() instanceof Player player)) return;
         if (!isInvalidItem(e.getItem().getItemStack())) return;
-        String playerID = PlayerConverter.getID(player);
-        if (!containsPlayer(playerID) || !checkConditions(playerID)) {
+        Profile profile = PlayerConverter.getID(player);
+        if (!containsPlayer(profile) || !checkConditions(profile)) {
             return;
         }
-        PickupData playerData = getPickupData(playerID);
+        PickupData playerData = getPickupData(profile);
         ItemStack pickupItem = e.getItem().getItemStack();
         playerData.pickup(pickupItem.getAmount());
         if (playerData.isFinished()) {
-            completeObjective(playerID);
+            completeObjective(profile);
             return;
         }
         if (this.notify)
             try {
-                Config.sendNotify(this.instruction.getPackage().getName(), playerID, "items_to_pickup", new String[]{Integer.toString(playerData.getAmount())}, "items_to_pickup,info");
+                Config.sendNotify(this.instruction.getPackage().getQuestPath(), (OnlineProfile) profile, "items_to_pickup", new String[]{Integer.toString(playerData.getAmount())}, "items_to_pickup,info");
             } catch (QuestRuntimeException exception) {
                 try {
-                    LogUtils.getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'items_to_pickup' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
-                } catch (InstructionParseException exep) {
-                    LogUtils.logThrowableReport(exep);
+                    BetonQuest.getInstance().getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'items_to_pickup' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
+                } catch (InstructionParseException ignored) {
+
                 }
             }
     }
@@ -102,23 +103,23 @@ public class PickupItem extends Objective implements Listener {
     }
 
     @Override
-    public String getProperty(String name, String playerID) {
+    public String getProperty(String name, Profile profile) {
         return switch (name.toLowerCase(Locale.ROOT)) {
-            case "left" -> Integer.toString(getPickupData(playerID).getAmount());
+            case "left" -> Integer.toString(getPickupData(profile).getAmount());
             case "amount" -> Integer.toString(this.amount);
             default -> "";
         };
     }
 
-    private PickupData getPickupData(String playerID) {
-        return (PickupData) this.dataMap.get(playerID);
+    private PickupData getPickupData(Profile profile) {
+        return (PickupData) this.dataMap.get(profile);
     }
 
     public static class PickupData extends Objective.ObjectiveData {
         private int amount;
 
-        public PickupData(String instruction, String playerID, String objID) {
-            super(instruction, playerID, objID);
+        public PickupData(String instruction, Profile profile, String objID) {
+            super(instruction, profile, objID);
             this.amount = Integer.parseInt(instruction);
         }
 

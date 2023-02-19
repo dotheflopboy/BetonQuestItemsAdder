@@ -1,11 +1,11 @@
-package me.voten.betonquestitemsadder.conditions;
+package main.java.me.voten.betonquestitemsadder.conditions;
 
-import dev.lone.itemsadder.api.ItemsAdder;
-import me.voten.betonquestitemsadder.util.NumberUtils;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Condition;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.exceptions.QuestRuntimeException;
+import dev.lone.itemsadder.api.CustomBlock;
+import dev.lone.itemsadder.api.CustomStack;
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Condition;
+import org.betonquest.betonquest.api.profiles.Profile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,7 +21,7 @@ public class IsBlock extends Condition {
     }
 
     @Override
-    protected Boolean execute(String playerID) {
+    protected Boolean execute(Profile profile) {
         String name;
         String Location;
         World world;
@@ -47,9 +47,10 @@ public class IsBlock extends Condition {
                 return null;
             }
             Location loc = new Location(world, x, y, z);
-            if (ItemsAdder.isCustomBlock(loc.getBlock())) {
-                ItemStack it = ItemsAdder.getCustomBlock(loc.getBlock());
-                return ItemsAdder.matchCustomItemName(it, name);
+
+            if (CustomBlock.byAlreadyPlaced(loc.getBlock()).isBlock()) {
+                ItemStack it = CustomBlock.byItemStack(loc.getBlock());
+                return CustomStack.byItemStack(it).matchNamespacedID(CustomStack.getInstance(name));
             }
         }
         return false;

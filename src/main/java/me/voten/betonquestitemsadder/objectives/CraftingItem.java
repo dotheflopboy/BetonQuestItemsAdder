@@ -1,12 +1,13 @@
-package me.voten.betonquestitemsadder.objectives;
+package main.java.me.voten.betonquestitemsadder.objectives;
 
 import dev.lone.itemsadder.api.ItemsAdder;
-import me.voten.betonquestitemsadder.util.NumberUtils;
-import pl.betoncraft.betonquest.BetonQuest;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Objective;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Objective;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -48,15 +49,15 @@ public class CraftingItem extends Objective implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCrafting(CraftItemEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        String playerID = PlayerConverter.getID(player);
-        CraftData playerData = (CraftData) this.dataMap.get(playerID);
-        if (containsPlayer(playerID)) {
+        Profile profile = PlayerConverter.getID(player);
+        CraftData playerData = (CraftData) this.dataMap.get(profile);
+        if (containsPlayer(profile)) {
             if (ItemsAdder.matchCustomItemName(event.getRecipe().getResult(), ItemsAdder.getCustomItemName(this.item))) {
-                if (checkConditions(playerID)) {
+                if (checkConditions(profile)) {
                     int absoluteCreations = countPossibleCrafts(event);
                     int remainingSpace = countRemainingSpace(player);
                     playerData.subtract(Math.min(remainingSpace, absoluteCreations));
-                    if (playerData.isZero()) completeObjective(playerID);
+                    if (playerData.isZero()) completeObjective(profile);
                 }
             }
         }
@@ -102,19 +103,19 @@ public class CraftingItem extends Objective implements Listener {
     }
 
     @Override
-    public String getProperty(String name, String playerID) {
+    public String getProperty(String name, Profile profile) {
         if ("left".equalsIgnoreCase(name))
-            return Integer.toString(this.amount - ((CraftData) this.dataMap.get(playerID)).getAmount());
+            return Integer.toString(this.amount - ((CraftData) this.dataMap.get(profile)).getAmount());
         if ("amount".equalsIgnoreCase(name))
-            return Integer.toString(((CraftData) this.dataMap.get(playerID)).getAmount());
+            return Integer.toString(((CraftData) this.dataMap.get(profile)).getAmount());
         return "";
     }
 
     public static class CraftData extends Objective.ObjectiveData {
         private int amount;
 
-        public CraftData(String instruction, String playerID, String objID) {
-            super(instruction, playerID, objID);
+        public CraftData(String instruction, Profile profile, String objID) {
+            super(instruction, profile, objID);
             this.amount = Integer.parseInt(instruction);
         }
 

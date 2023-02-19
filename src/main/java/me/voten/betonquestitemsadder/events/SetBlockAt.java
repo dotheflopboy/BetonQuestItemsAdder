@@ -1,14 +1,15 @@
-package me.voten.betonquestitemsadder.events;
+package main.java.me.voten.betonquestitemsadder.events;
 
-import dev.lone.itemsadder.api.ItemsAdder;
-import me.voten.betonquestitemsadder.util.NumberUtils;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.QuestEvent;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
+import dev.lone.itemsadder.api.CustomBlock;
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.QuestEvent;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class SetBlockAt extends QuestEvent {
 
@@ -20,7 +21,7 @@ public class SetBlockAt extends QuestEvent {
     }
 
     @Override
-    protected Void execute(String playerID) {
+    protected Void execute(Profile profile) {
         String name;
         String Location;
         World world;
@@ -46,9 +47,9 @@ public class SetBlockAt extends QuestEvent {
                 return null;
             }
             Location loc = new Location(world, x, y, z);
-            ItemStack block = ItemsAdder.getCustomItem(name);
-            if (block.getType().isBlock()) {
-                ItemsAdder.placeCustomBlock(loc, block);
+            @Nullable CustomBlock block = CustomBlock.getInstance(name);
+            if (block.isBlock()) {
+                CustomBlock.place(block.getNamespacedID(), loc);
 			} else {
                 System.out.println("Item must be a block");
 			}

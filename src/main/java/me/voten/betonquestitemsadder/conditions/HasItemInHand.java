@@ -1,12 +1,15 @@
-package me.voten.betonquestitemsadder.conditions;
+package main.java.me.voten.betonquestitemsadder.conditions;
 
+import dev.lone.itemsadder.api.CustomStack;
 import dev.lone.itemsadder.api.ItemsAdder;
-import me.voten.betonquestitemsadder.util.NumberUtils;
+import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Condition;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.utils.PlayerConverter;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Condition;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
 
 public class HasItemInHand extends Condition {
 
@@ -31,9 +34,12 @@ public class HasItemInHand extends Condition {
     }
 
     @Override
-    protected Boolean execute(String playerID) {
-        ItemStack HandItem = PlayerConverter.getPlayer(playerID).getInventory().getItemInMainHand();
-        if (ItemsAdder.matchCustomItemName(HandItem, this.item)) {
+    protected Boolean execute(Profile profile) {
+        Player player = (Player) PlayerConverter.getID(profile.getPlayer());
+        ItemStack HandItem = player.getInventory().getItemInMainHand();
+
+
+        if (CustomStack.byItemStack(HandItem).matchNamespacedID(CustomStack.getInstance(this.item))) {
             return HandItem.getAmount() >= this.amount;
         }
         return false;

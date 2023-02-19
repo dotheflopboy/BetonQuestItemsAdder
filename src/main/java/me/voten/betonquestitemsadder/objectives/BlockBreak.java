@@ -2,10 +2,10 @@ package main.java.me.voten.betonquestitemsadder.objectives;
 
 import dev.lone.itemsadder.api.ItemsAdder;
 import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
-import me.voten.betonquestitemsadder.util.NumberUtils;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.Objective;
+import org.betonquest.betonquest.api.profiles.OnlineProfile;
 import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.config.Config;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
@@ -55,35 +55,35 @@ public class BlockBreak extends Objective implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent e) {
-        String playerID = String.valueOf(PlayerConverter.getID(e.getPlayer()));
-        if (containsPlayer(playerID)) {
+        Profile profile = PlayerConverter.getID(e.getPlayer());
+        if (containsPlayer(profile)) {
             if (ItemsAdder.isCustomBlock(e.getBlock())) {
                 if (ItemsAdder.matchCustomItemName(ItemsAdder.getCustomBlock(e.getBlock()), ItemsAdder.getCustomItemName(this.item))) {
-                    if (checkConditions(playerID)) {
-                        BlockData playerData = (BlockData) this.dataMap.get(playerID);
+                    if (checkConditions(profile)) {
+                        BlockData playerData = (BlockData) this.dataMap.get(profile);
                         playerData.add();
                         if (playerData.getAmount() == this.amount) {
-                            completeObjective(playerID);
+                            completeObjective(profile);
                         } else if (this.notify && playerData.getAmount() % this.notifyInterval == 0) {
                             if (playerData.getAmount() > this.amount) {
                                 try {
-                                    Config.sendNotify(this.instruction.getPackage().getName(), playerID, "blocks_to_break", new String[]{String.valueOf(playerData.getAmount() - this.amount)}, "blocks_to_break,info");
+                                    Config.sendNotify(this.instruction.getPackage().getQuestPath(), (OnlineProfile) profile, "blocks_to_break", new String[]{String.valueOf(playerData.getAmount() - this.amount)}, "blocks_to_break,info");
                                 } catch (QuestRuntimeException exception) {
                                     try {
-                                        LogUtils.getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_break' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
-                                    } catch (InstructionParseException exep) {
-                                        LogUtils.logThrowableReport(exep);
+                                        BetonQuest.getInstance().getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_break' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
+                                    } catch (InstructionParseException ignored) {
+
                                     }
                                 }
                             }
                         } else {
                             try {
-                                Config.sendNotify(this.instruction.getPackage().getName(), playerID, "blocks_to_place", new String[]{String.valueOf(this.amount - playerData.getAmount())}, "blocks_to_place,info");
+                                Config.sendNotify(this.instruction.getPackage().getQuestPath(), (OnlineProfile) profile, "blocks_to_place", new String[]{String.valueOf(this.amount - playerData.getAmount())}, "blocks_to_place,info");
                             } catch (QuestRuntimeException exception) {
                                 try {
-                                    LogUtils.getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_place' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
-                                } catch (InstructionParseException exep) {
-                                    LogUtils.logThrowableReport(exep);
+                                    BetonQuest.getInstance().getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_place' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
+                                } catch (InstructionParseException ignored) {
+
                                 }
                             }
                         }
@@ -93,7 +93,8 @@ public class BlockBreak extends Objective implements Listener {
         }
     }
 
-    private boolean containsPlayer(String playerID) {
+    public Profile containsPlayer(Profile profile) {
+        return true;
     }
 
     @Override

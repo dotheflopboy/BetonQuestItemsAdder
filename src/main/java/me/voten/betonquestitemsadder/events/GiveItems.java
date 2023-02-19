@@ -7,6 +7,7 @@ import org.betonquest.betonquest.api.QuestEvent;
 import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.utils.PlayerConverter;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class GiveItems extends QuestEvent {
@@ -38,7 +39,8 @@ public class GiveItems extends QuestEvent {
             return null;
         }
         this.item.setAmount(this.amount);
-        PlayerConverter.get(playerID).getInventory().addItem(this.item);
+        Player player = (Player) PlayerConverter.getID(profile.getPlayer());
+        player.getInventory().addItem(this.item);
         return null;
     }
 

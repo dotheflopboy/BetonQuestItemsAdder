@@ -1,14 +1,18 @@
-package me.voten.betonquestitemsadder.events;
+package main.java.me.voten.betonquestitemsadder.events;
 
+import dev.lone.itemsadder.api.CustomStack;
 import dev.lone.itemsadder.api.ItemsAdder;
 
 import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
 import org.betonquest.betonquest.api.profiles.Profile;
+
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.QuestEvent;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
 import org.betonquest.betonquest.utils.PlayerConverter;
+
 
 public class RemoveItems extends QuestEvent {
     private final ItemStack item;
@@ -18,7 +22,9 @@ public class RemoveItems extends QuestEvent {
         super(instruction, true);
         String item = instruction.getInstruction().substring(instruction.getInstruction().indexOf(" ") + 1);
         if (item.contains(" ")) {
-            this.item = ItemsAdder.getCustomItem(item.substring(0, item.indexOf(" ")));
+
+            this.item = CustomStack.getInstance(item.substring(0, item.indexOf(" "))).getItemStack();
+
             if (NumberUtils.isInteger(item.substring(item.indexOf(" ") + 1))) {
                 this.amount = Integer.parseInt(item.substring(item.indexOf(" ") + 1));
             } else {
@@ -38,7 +44,8 @@ public class RemoveItems extends QuestEvent {
             return null;
         }
         this.item.setAmount(this.amount);
-        PlayerConverter.getOnlineProfiles(profile).getInventory().removeItem(this.item);
+        Player player = (Player) PlayerConverter.getID(profile.getPlayer());
+        player.getInventory().removeItem(this.item);
         return null;
     }
 }

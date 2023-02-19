@@ -1,11 +1,11 @@
-package me.voten.betonquestitemsadder.conditions;
+package main.java.me.voten.betonquestitemsadder.conditions;
 
-import dev.lone.itemsadder.api.ItemsAdder;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Condition;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.exceptions.QuestRuntimeException;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
+import dev.lone.itemsadder.api.CustomStack;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Condition;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.utils.PlayerConverter;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class WearItems extends Condition {
@@ -17,10 +17,12 @@ public class WearItems extends Condition {
     }
 
     @Override
-    protected Boolean execute(String playerID) {
-        ItemStack[] inventoryItems = PlayerConverter.getPlayer(playerID).getInventory().getArmorContents();
+    protected Boolean execute(Profile profile) {
+        Player player = (Player) PlayerConverter.getID(profile.getPlayer());
+        ItemStack[] inventoryItems = player.getInventory().getArmorContents();
+
         for (ItemStack it : inventoryItems) {
-            if (ItemsAdder.matchCustomItemName(it, item)) {
+            if (CustomStack.byItemStack(it).matchNamespacedID(CustomStack.getInstance(item))) {
                 return true;
             }
         }

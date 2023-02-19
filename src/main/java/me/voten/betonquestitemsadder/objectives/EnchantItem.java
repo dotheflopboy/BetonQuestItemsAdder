@@ -1,8 +1,12 @@
-package me.voten.betonquestitemsadder.objectives;
+package main.java.me.voten.betonquestitemsadder.objectives;
 
-import java.util.List;
-import java.util.Locale;
-
+import dev.lone.itemsadder.api.ItemsAdder;
+import org.betonquest.betonquest.BetonQuest;
+import org.betonquest.betonquest.Instruction;
+import org.betonquest.betonquest.api.Objective;
+import org.betonquest.betonquest.api.profiles.Profile;
+import org.betonquest.betonquest.exceptions.InstructionParseException;
+import org.betonquest.betonquest.utils.PlayerConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -10,14 +14,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
-import dev.lone.itemsadder.api.ItemsAdder;
-import pl.betoncraft.betonquest.BetonQuest;
-import pl.betoncraft.betonquest.Instruction;
-import pl.betoncraft.betonquest.api.Objective;
-import pl.betoncraft.betonquest.exceptions.InstructionParseException;
-import pl.betoncraft.betonquest.utils.PlayerConverter;
+import java.util.List;
+import java.util.Locale;
 
 public class EnchantItem extends Objective implements Listener {
 
@@ -38,8 +37,8 @@ public class EnchantItem extends Objective implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onEnchant(EnchantItemEvent event) {
-		String playerID = PlayerConverter.getID(event.getEnchanter());
-		if (!containsPlayer(playerID))
+		Profile profile = PlayerConverter.getID(event.getEnchanter());
+		if (!containsPlayer(profile))
 			return;
 		if (!ItemsAdder.matchCustomItemName(event.getItem(), ItemsAdder.getCustomItemName(this.item))) {
 			return;
@@ -50,8 +49,8 @@ public class EnchantItem extends Objective implements Listener {
 							.getLevel())
 				return;
 		}
-		if (checkConditions(playerID))
-			completeObjective(playerID);
+		if (checkConditions(profile))
+			completeObjective(profile);
 	}
 
 	@Override
@@ -70,7 +69,7 @@ public class EnchantItem extends Objective implements Listener {
 	}
 
 	@Override
-	public String getProperty(String name, String playerID) {
+	public String getProperty(String name, Profile profile) {
 		return "";
 	}
 
