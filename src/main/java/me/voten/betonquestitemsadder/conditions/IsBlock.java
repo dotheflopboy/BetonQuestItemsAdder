@@ -2,6 +2,7 @@ package main.java.me.voten.betonquestitemsadder.conditions;
 
 import dev.lone.itemsadder.api.CustomBlock;
 import dev.lone.itemsadder.api.CustomStack;
+import dev.lone.itemsadder.api.ItemsAdder;
 import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.Condition;
@@ -49,7 +50,7 @@ public class IsBlock extends Condition {
             Location loc = new Location(world, x, y, z);
 
             if (CustomBlock.byAlreadyPlaced(loc.getBlock()).isBlock()) {
-                ItemStack it = CustomBlock.byItemStack(loc.getBlock());
+                ItemStack it = ItemsAdder.getCustomBlock(loc.getBlock());
                 return CustomStack.byItemStack(it).matchNamespacedID(CustomStack.getInstance(name));
             }
         }

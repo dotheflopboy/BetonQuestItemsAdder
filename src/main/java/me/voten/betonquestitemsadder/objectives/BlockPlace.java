@@ -6,6 +6,7 @@ import main.java.me.voten.betonquestitemsadder.util.NumberUtils;
 import org.betonquest.betonquest.BetonQuest;
 import org.betonquest.betonquest.Instruction;
 import org.betonquest.betonquest.api.Objective;
+import org.betonquest.betonquest.api.profiles.OnlineProfile;
 import org.betonquest.betonquest.api.profiles.Profile;
 import org.betonquest.betonquest.config.Config;
 import org.betonquest.betonquest.exceptions.InstructionParseException;
@@ -64,23 +65,23 @@ public class BlockPlace extends Objective implements Listener {
                     } else if (this.notify && playerData.getAmount() % this.notifyInterval == 0) {
                         if (playerData.getAmount() > this.amount) {
                             try {
-                                Config.sendNotify(this.instruction.getPackage().getName(), profile, "blocks_to_break", new String[]{String.valueOf(playerData.getAmount() - this.amount)}, "blocks_to_break,info");
+                                Config.sendNotify(this.instruction.getPackage().getQuestPath(), (OnlineProfile) profile, "blocks_to_break", new String[]{String.valueOf(playerData.getAmount() - this.amount)}, "blocks_to_break,info");
                             } catch (QuestRuntimeException exception) {
                                 try {
-                                    LogUtils.getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_break' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
-                                } catch (InstructionParseException exep) {
-                                    LogUtils.logThrowableReport(exep);
+                                    BetonQuest.getInstance().getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_break' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
+                                } catch (InstructionParseException ignored) {
+
                                 }
                             }
                         }
                     } else {
                         try {
-                            Config.sendNotify(this.instruction.getPackage().getName(), profile, "blocks_to_place", new String[]{String.valueOf(this.amount - playerData.getAmount())}, "blocks_to_place,info");
+                            Config.sendNotify(this.instruction.getPackage().getQuestPath(), (OnlineProfile) profile, "blocks_to_place", new String[]{String.valueOf(this.amount - playerData.getAmount())}, "blocks_to_place,info");
                         } catch (QuestRuntimeException exception) {
                             try {
-                                LogUtils.getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_place' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
-                            } catch (InstructionParseException exep) {
-                                LogUtils.logThrowableReport(exep);
+                                BetonQuest.getInstance().getLogger().log(Level.WARNING, "The notify system was unable to play a sound for the 'blocks_to_place' category in '" + this.instruction.getObjective().getFullID() + "'. Error was: '" + exception.getMessage() + "'");
+                            } catch (InstructionParseException ignored) {
+
                             }
                         }
                     }

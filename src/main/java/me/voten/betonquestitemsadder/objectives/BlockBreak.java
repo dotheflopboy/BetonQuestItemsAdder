@@ -93,9 +93,6 @@ public class BlockBreak extends Objective implements Listener {
         }
     }
 
-    public Profile containsPlayer(Profile profile) {
-        return true;
-    }
 
     @Override
     public void start() {
